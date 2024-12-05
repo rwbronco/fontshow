@@ -136,6 +136,14 @@
 
 		  fontListDiv.appendChild(fontDiv);
 		});
+		
+		// Update font samples when the text input changes
+        textInput.addEventListener('input', () => {
+          const newText = textInput.value || "The quick brown fox jumps over the lazy dog.";
+          document.querySelectorAll('.font-sample').forEach(sample => {
+            sample.textContent = newText;
+          });
+        });
 	  })
 	  .catch(error => console.error('Error fetching fonts:', error));
 
