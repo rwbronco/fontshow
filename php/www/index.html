@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Font Display</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    #text-input {
+      display: block;
+      margin: 20px auto;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+    }
+	.font-list {
+	  display: flex;
+	  flex-wrap: wrap;
+	  gap: 20px;
+	}
+	.font-list > .font-display:nth-child(3n+1),
+	.font-list > .font-display:nth-child(3n+2),
+	.font-list > .font-display:nth-child(3n+3) {
+	  flex-grow: 0; /* Prevent stretching */
+	}
+	.font-display {
+	  flex: 1 1 calc(33.33% - 20px); /* Ensures 3 columns layout */
+	  border: 1px solid #ccc;
+      padding: 10px;
+	  box-sizing: border-box;
+	}
+    .font-name a {
+      text-decoration: none;
+      color: #007BFF;
+      font-size: 24px;
+    }
+    .font-name a:hover {
+      text-decoration: underline;
+    }
+    .font-sample {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+	.input-container {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  gap: 10px; /* Space between input and button */
+	  max-width: 600px; /* Limit the width */
+	  margin: 0 auto; /* Center the container */
+	}
+
+	#refresh-cache-btn {
+	  background-color: #007BFF;
+	  color: white;
+	  border: none;
+	  padding: 10px 20px;
+	  cursor: pointer;
+	  font-size: 16px;
+	  white-space: nowrap; /* Prevent text wrapping */
+	  border-radius: 5px; /* Slightly rounded corners */
+	}
+
+	#refresh-cache-btn:hover {
+	  background-color: #0056b3; /* Darker shade on hover */
+	}
+
+  </style>
+</head>
+<body>
+  <h1>Available Fonts</h1>
+  <div class="input-container">
+  <input 
+    id="text-input" 
+    type="text" 
+    placeholder="Enter text to preview fonts..." 
+    value="The quick brown fox jumps over the lazy dog."
+  >
+  <button id="refresh-cache-btn">Refresh Cache</button>
+</div>
+  <div class="font-list" id="font-list"></div>
+
+  <script>
+    const fontFolder = '/fonts/';
+    const fontListDiv = document.getElementById('font-list');
+    const textInput = document.getElementById('text-input');
+	
+	document.getElementById('refresh-cache-btn').addEventListener('click', () => {
+	  fetch('get-fonts.php?refresh=true')
+		.then(response => response.json())
+		.then(fonts => {
+		  console.log('Cache refreshed', fonts);
+		  location.reload();  // Reload page to reflect changes
+		})
+		.catch(error => console.error('Error refreshing cache:', error));
+	});
+
+    // Fetch font list from PHP
+	fetch('get-fonts.php')
+	  .then(response => response.json())
+	  .then(fonts => {
+		fonts.forEach((font, index) => {
+		  const fontFamilyName = `custom-font-${index}`;
+
+		  // Inject @font-face rule
+		  const styleSheet = document.styleSheets[0];
+		  styleSheet.insertRule(`
+			@font-face {
+			  font-family: '${fontFamilyName}';
+			  src: url('${fontFolder}${font.file}');
+			}
+		  `, styleSheet.cssRules.length);
+
+		  // Create a display element
+		  const fontDiv = document.createElement('div');
+		  fontDiv.classList.add('font-display');
+		  fontDiv.style.fontFamily = fontFamilyName;
+
+		  fontDiv.innerHTML = `
+			<p class="font-name">
+			  <a href="${fontFolder}${font.file}" download>${font.postscript_name}</a>
+			</p>
+			<p class="font-sample">The quick brown fox jumps over the lazy dog.</p>
+		  `;
+
+		  fontListDiv.appendChild(fontDiv);
+		});
+	  })
+	  .catch(error => console.error('Error fetching fonts:', error));
+
+  </script>
+</body>
+</html>

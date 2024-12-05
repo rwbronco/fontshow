@@ -1,0 +1,5 @@
+{
+    "require": {
+        "dompdf/php-font-lib": "^1.0"
+    }
+}
