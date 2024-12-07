@@ -1,7 +1,16 @@
 version: '3.1'
 
 services:
+  tunnel:
+    # I use Cloudflare Tunnels. Uncomment the following lines to include your tunnel in the stack and replace 'REPLACEME' with your tunnel token
+    # container_name: cloudflared-tunnel_fontshow
+    # image: cloudflare/cloudflared
+    # restart: unless-stopped
+    # command: tunnel run
+    # environment:
+    #   - TUNNEL_TOKEN=REPLACEME
   php:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
