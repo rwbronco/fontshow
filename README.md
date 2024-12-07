@@ -52,3 +52,17 @@ Give it some time on it's first launch to scan the /fonts/ folder. This goes for
 
 ## Notes
 Variable fonts are unsupported by the php-font-lib library I'm using, so they won't be supported by FontShow unless they're added to php-font-lib or someone recommends another library I can use that does support them. There may be some other font types that don't work, but the main ones like OTF and TTF do. Bugs will be worked out as they're discovered. Please leave an issue if you run into any problems!
+
+# ROADMAP
+
+## Planned Features
+- Site logo and favicon (configurable)
+- Filterable by font weight/style: Simple things like Font Subfamily (ex: Bold) and Font Weight (ex: 700) will be easy to have in a dropdown filter. I would love to allow users to add tags to fonts that are then added to the filterable categories (ex: script, distressed, vintage, etc)
+- Search function: I'd love to have a search function that filters the fonts based on a user input
+- Single-column for mobile: Currently the site keeps the same number of columns no matter the reported browser width. For vertical screens I'd like it to automatically fall back to single-column (configurable) so users can read the previews.
+
+## Long-term Goals
+- Users: Allow user creation and roles
+- Web-based font management: It's currently just displaying fonts from a folder. I'd like to allow a user to manage the fonts in that folder and potentially even modify a font's metadata. Hiding, renaming, uploading, deleting, etc.
+- Expanded Font Preview: Similar to the way DaFont and others handle this. Instead of simply downloading, clicking the font name would open a subpage for that font with expanded previews for each font character, etc.
+- Figure out another solution to the "Refresh Cache" button without asking for constant folder scans
