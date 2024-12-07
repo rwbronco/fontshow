@@ -53,6 +53,9 @@ Give it some time on it's first launch to scan the /fonts/ folder. This goes for
 ## Notes
 Variable fonts are unsupported by the php-font-lib library I'm using, so they won't be supported by FontShow unless they're added to php-font-lib or someone recommends another library I can use that does support them. There may be some other font types that don't work, but the main ones like OTF and TTF do. Bugs will be worked out as they're discovered. Please leave an issue if you run into any problems!
 
+## Current bugs
+- Footer doesn't stick to the bottom of the site and leaves a gap when on mobile and the aspect ratio changes to landscape.
+
 # ROADMAP
 
 ## Planned Features
