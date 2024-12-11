@@ -29,7 +29,7 @@ To change the port number that fontshow uses, simply change the port in the [doc
       - 8090:80
 ```
 
-## CONFIG FILE
+## Config File
 Almost everything from the site color to footer contents can be changed in the [config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php).
 
 ## Cache
