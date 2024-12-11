@@ -1,4 +1,4 @@
-<?php
+<?php 
 require_once 'vendor/autoload.php';
 use FontLib\Font;
 
@@ -13,9 +13,12 @@ if (isset($_GET['refresh'])) {
 if (file_exists($cacheFile) && time() - filemtime($cacheFile) < $cacheTime) {
     $fontNames = json_decode(file_get_contents($cacheFile), true);
 } else {
-
     $fontFolder = 'fonts/';
     $fontFiles = array_diff(scandir($fontFolder), array('..', '.'));
+
+    // Sort files alphabetically
+    sort($fontFiles);
+
     $fontNames = [];
 
     foreach ($fontFiles as $file) {
@@ -23,12 +26,21 @@ if (file_exists($cacheFile) && time() - filemtime($cacheFile) < $cacheTime) {
             try {
                 $font = Font::load($fontFolder . $file);
                 $font->parse();
+
+                // Retrieve font metadata
+                $fullName = $font->getFontFullName();
+                $subfamily = $font->getFontSubfamily(); // Extract Subfamily
+
                 $fontNames[] = [
                     'file' => $file,
-                    'postscript_name' => $font->getFontPostscriptName()
+                    'full_name' => $fullName,
+                    'subfamily' => $subfamily
                 ];
             } catch (Exception $e) {
-                $fontNames[] = ['file' => $file, 'error' => $e->getMessage()];
+                $fontNames[] = [
+                    'file' => $file,
+                    'error' => $e->getMessage()
+                ];
             }
         }
     }
@@ -39,4 +51,3 @@ if (file_exists($cacheFile) && time() - filemtime($cacheFile) < $cacheTime) {
 
 header('Content-Type: application/json');
 echo json_encode($fontNames);
-
