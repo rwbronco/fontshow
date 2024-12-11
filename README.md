@@ -29,17 +29,17 @@ To change the port number that fontshow uses, simply change the port in the [doc
       - 8090:80
 ```
 
-## Front End
-The front end is currently designed around a 3 column layout, but I may try to build some configuration into that. If you know CSS you can modify the _.font-display_ and _.font-list_ classes at the top of [index.html](https://github.com/rwbronco/fontshow/blob/main/php/www/index.html).
+## CONFIG FILE
+Almost everything from the site color to footer contents can be changed in the [config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php).
 
 ## Cache
-The cache is set to refresh every day, but can be triggered by a button on the front end next to the text preview box. To change the duration between refreshes, edit this line in [get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php):
+The cache is set to refresh every day, but can be triggered by a button on the front end next to the text preview box. To change the duration between refreshes, edit this line in [get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) (this will be added to config.php soon):
 ```
 $cacheTime = 86400; // Cache for 1 day
 ```
-To remove the button, remove this line of code from [index.html](https://github.com/rwbronco/fontshow/blob/main/php/www/index.html). To hide the button simply comment it out to disable it:
+To remove the button, remove this line of code from [index.php](https://github.com/rwbronco/fontshow/blob/main/php/www/index.php). To hide the button simply comment it out to disable it:
 ```
-<button id="refresh-cache-btn">Refresh Cache</button>
+<button id="cache-btn">Refresh Cache</button>
 ```
 
 ## Adding Fonts
