@@ -60,12 +60,12 @@ Variable fonts are unsupported by the php-font-lib library I'm using, so they wo
 
 ## Planned Features
 - Site logo and favicon (configurable)
-- Filterable by font weight/style: Simple things like Font Subfamily (ex: Bold) and Font Weight (ex: 700) will be easy to have in a dropdown filter. I would love to allow users to add tags to fonts that are then added to the filterable categories (ex: script, distressed, vintage, etc)
+- Index of and merging analogous subfamily tags - ex: gras = bold, italique = italic, normal = regular, etc.
 - Search function: I'd love to have a search function that filters the fonts based on a user input
 - Single-column for mobile: Currently the site keeps the same number of columns no matter the reported browser width. For vertical screens I'd like it to automatically fall back to single-column (configurable) so users can read the previews.
 
 ## Long-term Goals
 - Users: Allow user creation and roles
 - Web-based font management: It's currently just displaying fonts from a folder. I'd like to allow a user to manage the fonts in that folder and potentially even modify a font's metadata. Hiding, renaming, uploading, deleting, etc.
-- Expanded Font Preview: Similar to the way DaFont and others handle this. Instead of simply downloading, clicking the font name would open a subpage for that font with expanded previews for each font character, etc.
+- Expanded Font Preview: Similar to the way DaFont and others handle this. Instead of simply downloading, clicking the font name would open a subpage for that font with expanded previews for each font character, user-added tags, etc.
 - Figure out another solution to the "Refresh Cache" button without asking for constant folder scans
