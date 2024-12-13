@@ -1,20 +1,33 @@
-version: '3.1'
+version: '3.7'
+name: fontshow
 
 services:
-  tunnel:
-    # I use Cloudflare Tunnels. Uncomment the following lines to include your tunnel in the stack and replace 'REPLACEME' with your tunnel token
-    # container_name: cloudflared-tunnel_fontshow
-    # image: cloudflare/cloudflared
-    # restart: unless-stopped
-    # command: tunnel run
-    # environment:
-    #   - TUNNEL_TOKEN=REPLACEME
-  php:
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 8090:80
-    volumes:
-      - ./php/www:/var/www/html/
+    mysql:
+        image: mysql:latest
+        restart: unless-stopped
+        container_name: fontshow-mysql              # Don't change this.
+        ports:
+            - 3307:3306                             # Change port 3307 if you have conflicts. Doesn't need to change elsewhere.
+        volumes:
+            - fontshow-mysql_data:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: CHANGEME           # Change this for security. We don't need root, so it's unused.
+            MYSQL_DATABASE: fontshowDB              # This doesn't need to be changed, but you can change it in php/www/config.php
+            MYSQL_USER: user                        # Change this for security, and change in php/www/config.php
+            MYSQL_PASSWORD: password                # Change this for security, and change in php/www/config.php
+        
+    php:
+        container_name: fontshow
+        restart: unless-stopped
+        depends_on:
+            - mysql                                 # Tells FontShow container to require mysql container.
+        build:
+            context: .
+            dockerfile: Dockerfile                  # Tells FontShow container to require the dockerfile to correctly build the web server and it's dependencies
+        ports:
+            - 8090:80                               # Change port 8090 if you have conflicts. Doesn't need to change elsewhere.
+        volumes:
+            - ./php/www:/var/www/html/              # Leave alone unless you want your web server folder files located somewhere else.
+        
+volumes:
+  fontshow-mysql_data:
