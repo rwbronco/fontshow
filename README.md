@@ -6,51 +6,58 @@ Docker container for displaying fonts in a folder
 There isn't a simple docker container that I can find that will act as a sort of font-repository where I can browse and preview fonts and then download them. So I decided to just make one. This docker container uses php:apache, composer, and [php-font-lib](https://github.com/dompdf/php-font-lib) to pull a list of fonts from a directory, read the metadata, cache the info, and display their names and a preview on a webpage where users can download them. This project is in very early stages, so be sure to report any issues or bugs you find, and be patient because I'm a graphic designer, not a programmer!
 
 # INSTALLATION
-## Docker Compose
-Use git clone to copy the repository to your computer. On Windows, open a command prompt at the location you want and run:
-```
-git clone https://github.com/rwbronco/fontshow.git
-```
-In that same folder build and launch the container
+
+## Build & Launch with Docker Compose
+Use git clone to copy the repository to your computer or click the green "Code" button at the top of this page and download and extract the zip file to wherever you'd like. To build and launch FontShow, open a command prompt (or however you run these commands on your OS) in the same folder as the [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-compose.yml) and run:
 ```
 docker-compose up --build
 ```
-Check http://localhost:8090 to ensure the container has launched correctly. To launch it in the future without rebuilding it:
+This will take a moment as it builds the container and launches it. Check http://localhost:8090 to ensure the container has launched correctly. To launch it in the future without rebuilding it:
 ```
 docker-compose up -d
 ```
 
-# CONFIGURATION
-
-## Port Number
+## Compose File
+### Port Number
 To change the port number that fontshow uses, simply change the port in the [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-compose.yml) file:
 ```
     ports:
       - 8090:80
 ```
 
+### Database Credentials
+The [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-compose.yml) file sets "user" and "password" as the default credentials for the database. ***Please change these for security reasons.*** Once you've changed them, please make sure you also change them in [php/www/config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php). The root password isn't used anywhere by FontShow, but should also be changed for security reasons.
+```
+      environment:
+          MYSQL_ROOT_PASSWORD: CHANGEME
+          MYSQL_DATABASE: fontshowDB
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+```
+
+# SITE CONFIGURATION
+
 ## Config File
-Almost everything from the site color to footer contents can be changed in the [config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php).
+Almost everything from the site color to footer contents can be changed in the [php/www/config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php).
+
+## Database Connection
+[php/www/config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php) will have the default database credentials. If you changed them in [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-compose.yml) (***You should have!***) then you'll need to change them in the config file!
 
 ## Cache
-The cache is set to refresh every day, but can be triggered by a button on the front end next to the text preview box. To change the duration between refreshes, edit this line in [get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) (this will be added to config.php soon):
+The cache is set to refresh every day, but can be triggered by a button on the front end next to the text preview box. This duration length hasn't been made configurable as it's not something most people will need to change since there's a refresh button to immediately refresh it. To change the duration between refreshes, edit this line in [php/www/get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) (this will be added to config.php soon):
 ```
 $cacheTime = 86400; // Cache for 1 day
 ```
-To remove the button, remove this line of code from [index.php](https://github.com/rwbronco/fontshow/blob/main/php/www/index.php). To hide the button simply comment it out to disable it:
-```
-<button id="cache-btn">Refresh Cache</button>
-```
 
 ## Adding Fonts
-To add fonts, simply drop the font files into the /fonts/ directory, open your browser to FontShow, and click the "Refresh Cache" button.
+To add fonts, simply drop the font files into the /fonts/ directory, open your browser to FontShow, and click the "Refresh Cache" button. FontShow now supports subfolders within the /fonts/ directory. The front end of the site where fonts are displayed makes no distinction. This allows you to more neatly organize your /fonts/ director, and to make use of fonts that may already be nested in folders.
 
 # TROUBLESHOOTING
 
 ## Fonts don't load
-Give it some time on it's first launch to scan the /fonts/ folder. This goes for adding new fonts and them showing up in fontshow. In the background [get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) is pulling the metadata from each of the fonts and creating a [font-cache.json](https://github.com/rwbronco/fontshow/blob/main/php/www/font-cache.json) array for the front end to pull from. This can be pretty slow depending on the amount of fonts you have - and hence, the reason for the cache.
+Give it some time on it's first launch to scan the fonts in the /fonts/ folder. This goes for adding new fonts and them showing up in FontShow after pressing the Refresh Cache button. In the background [php/www/get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) is pulling the metadata from each of the fonts and adding it to the database for [php/www/index.php](https://github.com/rwbronco/fontshow/blob/main/php/www/index.php) to pull from. This can be pretty slow depending on the amount of fonts you have - and hence, the reason for the cache. The button text will update letting you know that fetching is being done in the background.
 
-## Notes
+## Variable Fonts
 Variable fonts are unsupported by the php-font-lib library I'm using, so they won't be supported by FontShow unless they're added to php-font-lib or someone recommends another library I can use that does support them. There may be some other font types that don't work, but the main ones like OTF and TTF do. Bugs will be worked out as they're discovered. Please leave an issue if you run into any problems!
 
 ## Current bugs
