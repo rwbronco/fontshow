@@ -53,85 +53,108 @@ $config = include('config.php');
 	const textInput = document.getElementById('text-input');
 	const subfamilyDropdown = document.getElementById('subfamily-dropdown'); // Dropdown element
 
-	document.getElementById('cache-btn').addEventListener('click', () => {
-		fetch('get-fonts.php?refresh=true')
-			.then(response => response.json())
-			.then(fonts => {
-				console.log('Cache refreshed', fonts);
-				location.reload(); // Reload page to reflect changes
-			})
-			.catch(error => console.error('Error refreshing cache:', error));
-	});
+document.getElementById('cache-btn').addEventListener('click', () => {
+    const button = document.getElementById('cache-btn');
+
+    // Change button text to "Refreshing!" when clicked
+    button.textContent = '<?php echo addslashes($config['refreshing_text']); ?>';
+    button.disabled = true; // Optionally disable the button to prevent multiple clicks
+
+    fetch('get-fonts.php?refresh=true')
+        .then(response => response.json())
+        .then(fonts => {
+            console.log('Cache refreshed', fonts);
+
+            // Change button text back to "Refresh Cache" after the process
+            button.textContent = 'Refresh Cache';
+            button.disabled = false; // Re-enable the button
+            location.reload(); // Reload page to reflect changes
+        })
+        .catch(error => {
+            console.error('Error refreshing cache:', error);
+
+            // Revert button text back to "Refresh Cache" if an error occurs
+            button.textContent = 'Refresh Cache';
+            button.disabled = false;
+        });
+});
 
 	// Fetch font data and populate dropdown and font list
-	fetch('get-fonts.php')
-		.then(response => response.json())
-		.then(fonts => {
-			if (!Array.isArray(fonts)) {
-				throw new Error("Invalid font data format");
-			}
+fetch('get-fonts.php')
+    .then(response => response.json())
+    .then(fonts => {
+        if (!Array.isArray(fonts)) {
+            throw new Error("Invalid font data format");
+        }
 
-			// Extract unique subfamilies for dropdown options
-			const subfamilies = [...new Set(fonts.map(font => font.subfamily || 'Unknown'))];
+        // Extract unique subfamilies for the dropdown
+        const subfamilies = [...new Set(fonts.map(font => font.subfamily || 'Unknown'))];
 
-			// Populate the dropdown
-			subfamilies.forEach(subfamily => {
-				const option = document.createElement('option');
-				option.value = subfamily;
-				option.textContent = subfamily === 'Unknown' ? 'All Subfamilies' : subfamily;
-				subfamilyDropdown.appendChild(option);
-			});
+        // Populate the dropdown
+        subfamilies.forEach(subfamily => {
+            const option = document.createElement('option');
+            option.value = subfamily;
+            option.textContent = subfamily === 'Unknown' ? 'All Subfamilies' : subfamily;
+            subfamilyDropdown.appendChild(option);
+        });
 
-			// Function to display fonts based on selected subfamily
-			const displayFonts = (selectedSubfamily) => {
-				fontListDiv.innerHTML = ''; // Clear existing fonts
-				fonts
-					.filter(font => selectedSubfamily === 'All Subfamilies' || font.subfamily === selectedSubfamily)
-					.forEach((font, index) => {
-						const fontFamilyName = `custom-font-${index}`;
+        // Function to display fonts based on selected subfamily
+        const displayFonts = (selectedSubfamily) => {
+            fontListDiv.innerHTML = ''; // Clear existing fonts
+            fonts
+                .filter(font => selectedSubfamily === 'All Subfamilies' || font.subfamily === selectedSubfamily)
+                .forEach((font, index) => {
+                    const fontFamilyName = `custom-font-${index}`;
 
-						// Inject @font-face rule
-						const styleSheet = document.styleSheets[0];
-						styleSheet.insertRule(`
-							@font-face {
-								font-family: '${fontFamilyName}';
-								src: url('${fontFolder}${font.file}');
-							}
-						`, styleSheet.cssRules.length);
+                    // Ensure proper path concatenation
+                    const fontPath = `${font.folder_path.replace(/\/$/, '')}/${font.file_name}`.replace(/\/\//g, '/');
 
-						// Create a font display element
-						const fontDiv = document.createElement('div');
-						fontDiv.classList.add('font-display');
-						fontDiv.style.fontFamily = fontFamilyName;
+                    // Inject @font-face rule
+                    const styleSheet = document.styleSheets[0];
+                    styleSheet.insertRule(`
+                        @font-face {
+                            font-family: '${fontFamilyName}';
+                            src: url('${fontPath}');
+                        }
+                    `, styleSheet.cssRules.length);
 
-						fontDiv.innerHTML = `
-							<p class="font-name">
-								<a href="${fontFolder}${font.file}" download>${font.full_name}</a>
-							</p>
-							<p class="font-sample">${textInput.value || font.full_name}</p>
-						`;
+                    // Create a font display element
+                    const fontDiv = document.createElement('div');
+                    fontDiv.classList.add('font-display');
+                    fontDiv.style.fontFamily = fontFamilyName;
 
-						fontListDiv.appendChild(fontDiv);
-					});
-			};
+                    fontDiv.innerHTML = `
+                        <p class="font-name">
+                            <a href="${fontPath}" download>${font.full_name}</a>
+                        </p>
+                        <p class="font-sample">${textInput.value || font.full_name}</p>
+                    `;
 
-			// Initial font display
-			displayFonts('All Subfamilies');
+                    fontListDiv.appendChild(fontDiv);
+                });
+        };
 
-			// Update font display when dropdown selection changes
-			subfamilyDropdown.addEventListener('change', (event) => {
-				displayFonts(event.target.value);
-			});
+        // Initial font display
+        displayFonts('All Subfamilies');
 
-			// Update font samples when the text input changes
-			textInput.addEventListener('input', () => {
-				const newText = textInput.value || '';
-				document.querySelectorAll('.font-sample').forEach(sample => {
-					sample.textContent = newText;
-				});
-			});
-		})
-		.catch(error => console.error('Error fetching font data:', error));
+        // Update font display when dropdown selection changes
+        subfamilyDropdown.addEventListener('change', (event) => {
+            displayFonts(event.target.value);
+        });
+
+        // Update font samples when the text input changes
+        textInput.addEventListener('input', () => {
+            const newText = textInput.value || '';
+            document.querySelectorAll('.font-sample').forEach(sample => {
+                sample.textContent = newText;
+            });
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching font data:', error);
+        fontListDiv.innerHTML = '<p class="error-message">Unable to load fonts. Please try again later.</p>';
+    });
+
 
   </script>
   
