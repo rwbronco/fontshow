@@ -19,7 +19,7 @@ docker-compose up -d
 
 ## Compose File
 ### Port Number
-To change the port number that fontshow uses, simply change the port in the [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-compose.yml) file:
+To change the port number that FontShow uses, simply change the port from 8090 to some other port number in the [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-compose.yml) file:
 ```
     ports:
       - 8090:80
@@ -41,10 +41,10 @@ The [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-c
 Almost everything from the site color to footer contents can be changed in the [php/www/config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php).
 
 ## Database Connection
-[php/www/config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php) will have the default database credentials. If you changed them in [docker-compose.yml](https://github.com/rwbronco/fontshow/blob/main/docker-compose.yml) (***You should have!***) then you'll need to change them in the config file!
+[php/www/config.php](https://github.com/rwbronco/fontshow/blob/main/php/www/config.php) will have the default database credentials. If you changed them in the compose file earlier (***You should have!***) then you'll need to change them in the config file!
 
 ## Cache
-The cache is set to refresh every day, but can be triggered by a button on the front end next to the text preview box. This duration length hasn't been made configurable as it's not something most people will need to change since there's a refresh button to immediately refresh it. To change the duration between refreshes, edit this line in [php/www/get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) (this will be added to config.php soon):
+The cache is set to refresh every day, but can be triggered by a button on the front end next to the text preview box. This duration length hasn't been made configurable as it's not something most people will need to change since there's a refresh button to immediately refresh it. To change the duration between refreshes, edit this line in [php/www/get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php):
 ```
 $cacheTime = 86400; // Cache for 1 day
 ```
@@ -55,7 +55,7 @@ To add fonts, simply drop the font files into the /fonts/ directory, open your b
 # TROUBLESHOOTING
 
 ## Fonts don't load
-Give it some time on it's first launch to scan the fonts in the /fonts/ folder. This goes for adding new fonts and them showing up in FontShow after pressing the Refresh Cache button. In the background [php/www/get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) is pulling the metadata from each of the fonts and adding it to the database for [php/www/index.php](https://github.com/rwbronco/fontshow/blob/main/php/www/index.php) to pull from. This can be pretty slow depending on the amount of fonts you have - and hence, the reason for the cache. The button text will update letting you know that fetching is being done in the background.
+Give it some time on it's first launch to scan the fonts in the /fonts/ folder. This goes for adding new fonts and them showing up in FontShow after pressing the Refresh Cache button. In the background [php/www/get-fonts.php](https://github.com/rwbronco/fontshow/blob/main/php/www/get-fonts.php) is pulling the metadata from each of the fonts and adding it to the database for [php/www/index.php](https://github.com/rwbronco/fontshow/blob/main/php/www/index.php) to pull from. This can be pretty slow depending on the amount of fonts you have. The button text will update letting you know that fetching is being done in the background.
 
 ## Variable Fonts
 Variable fonts are unsupported by the php-font-lib library I'm using, so they won't be supported by FontShow unless they're added to php-font-lib or someone recommends another library I can use that does support them. There may be some other font types that don't work, but the main ones like OTF and TTF do. Bugs will be worked out as they're discovered. Please leave an issue if you run into any problems!
